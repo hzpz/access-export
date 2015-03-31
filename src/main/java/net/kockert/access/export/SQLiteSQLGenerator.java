@@ -42,6 +42,9 @@ public class SQLiteSQLGenerator implements SQLGenerator {
                 case INT:
                 case LONG:
                 case MONEY:
+                /* SQLite does not have a dedicated type for storing timestamps and the
+                 * default behaviour of the driver is to store the date as Unix Time */
+                case SHORT_DATE_TIME:
                     stmtBuilder.append("INTEGER");
                     break;
 
@@ -56,8 +59,6 @@ public class SQLiteSQLGenerator implements SQLGenerator {
                 case TEXT:
                 case GUID:
                 case MEMO:
-                /* SQLite does not have a dedicated type for storing timestamps */
-                case SHORT_DATE_TIME:
                     stmtBuilder.append("TEXT");
                     break;
 

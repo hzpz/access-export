@@ -9,11 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.sql.*;
-import java.text.SimpleDateFormat;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -112,35 +112,9 @@ public class Exporter {
     }
 
     private void bindColumnValues(final Row row, List<? extends Column> columns, final PreparedStatement preparedStatement) throws SQLException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"); // ISO8601
         for (int i = 0; i < columns.size(); i++) {
             Column column = columns.get(i);
-            Object value = row.get(column.getName());
-
-            if (value == null) {
-                preparedStatement.setNull(i + 1, Types.NULL);
-                continue;
-            }
-
-            switch (column.getType()) {
-                case BOOLEAN:
-                    /* SQLite does not have a dedicated type for storing booleans, convert to integer */
-                    Boolean aBoolean = row.getBoolean(column.getName());
-                    if (aBoolean) {
-                        preparedStatement.setInt(i + 1, 1);
-                    } else {
-                        preparedStatement.setInt(i + 1, 0);
-                    }
-                    break;
-                case SHORT_DATE_TIME:
-                    /* SQLite does not have a dedicated type for storing timestamps, convert to text */
-                    Date date = row.getDate(column.getName());
-                    preparedStatement.setString(i + 1, dateFormat.format(date));
-                    break;
-                default:
-                    preparedStatement.setObject(i + 1, row.get(column.getName()));
-                    break;
-            }
+            preparedStatement.setObject(i + 1, row.get(column.getName()));
         }
     }
 
