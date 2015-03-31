@@ -13,4 +13,6 @@ public interface SQLGenerator {
 
     String createIndex(Index index);
 
+    String insertIntoTable(Table table);
+
 }

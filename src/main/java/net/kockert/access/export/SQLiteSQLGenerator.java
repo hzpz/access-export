@@ -18,9 +18,9 @@ public class SQLiteSQLGenerator implements SQLGenerator {
         final StringBuilder stmtBuilder = new StringBuilder();
 
         String tableName = table.getName();
-        stmtBuilder.append("CREATE TABLE '");
+        stmtBuilder.append("CREATE TABLE ");
         stmtBuilder.append(createStringConstant(tableName));
-        stmtBuilder.append("' (");
+        stmtBuilder.append(" (");
 
         List<? extends Column> columns = table.getColumns();
         for (Iterator<? extends Column> iterator = columns.iterator(); iterator.hasNext(); ) {
@@ -106,10 +106,42 @@ public class SQLiteSQLGenerator implements SQLGenerator {
         for (Iterator<? extends Index.Column> iterator = columns.iterator(); iterator.hasNext();) {
             Index.Column column = iterator.next();
             stmtBuilder.append(createStringConstant(column.getName()));
-            stmtBuilder.append(" ");
             if (iterator.hasNext())
                 stmtBuilder.append(", ");
         }
+        stmtBuilder.append(")");
+
+        return stmtBuilder.toString();
+    }
+
+    @Override
+    public String insertIntoTable(Table table) {
+        final StringBuilder stmtBuilder = new StringBuilder();
+
+        stmtBuilder.append("INSERT INTO ");
+        stmtBuilder.append(createStringConstant(table.getName()));
+        stmtBuilder.append(" (");
+
+        final List<? extends Column> columns = table.getColumns();
+
+        for (Iterator<? extends Column> iterator = columns.iterator(); iterator.hasNext();) {
+            Column column = iterator.next();
+            stmtBuilder.append(createStringConstant(column.getName()));
+            if (iterator.hasNext()) {
+                stmtBuilder.append(", ");
+            }
+        }
+
+        stmtBuilder.append(") VALUES (");
+
+        for (Iterator<? extends Column> iterator = columns.iterator(); iterator.hasNext();) {
+            iterator.next();
+            stmtBuilder.append("?");
+            if (iterator.hasNext()) {
+                stmtBuilder.append(", ");
+            }
+        }
+
         stmtBuilder.append(")");
 
         return stmtBuilder.toString();
