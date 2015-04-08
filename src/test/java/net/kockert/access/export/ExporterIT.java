@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat;
 public class ExporterIT {
 
     @Test
-    public void should() throws IOException, SQLException, ClassNotFoundException {
+    public void shouldExportArbitraryDataTypes() throws IOException, SQLException, ClassNotFoundException {
         byte[] bytes = new byte[]{0x1, 0x2, 0x3, 0x4};
         float floaty = 0.123f;
         Date now = new Date();
