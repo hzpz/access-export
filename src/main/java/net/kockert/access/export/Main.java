@@ -38,10 +38,11 @@ public class Main {
         try {
             Path sourceFile = getSourceFile(clp);
             Path targetFile = getTargetFile(clp);
-            Database database = openSourceDatabase(sourceFile.toFile());
-            Connection jdbcConnection = openTargetDatabase(targetFile);
-            Exporter exporter = new Exporter(database, clp.getTablesToExport());
-            exporter.export(jdbcConnection);
+            try (Database database = openSourceDatabase(sourceFile.toFile());
+                 Connection jdbcConnection = openTargetDatabase(targetFile)) {
+                Exporter exporter = new Exporter(database, clp.getTablesToExport());
+                exporter.export(jdbcConnection);
+            }
         } catch (SystemExitException e) {
             System.err.println(e.getMessage());
             System.exit(e.getStatusCode());
