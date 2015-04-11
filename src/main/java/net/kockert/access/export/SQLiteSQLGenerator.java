@@ -18,6 +18,9 @@ public class SQLiteSQLGenerator implements SQLGenerator {
     public String createTable(Table table, List<Relationship> relationships) {
         final StringBuilder stmtBuilder = new StringBuilder();
 
+        List<? extends Index.Column> primaryKeyColumns = table.getPrimaryKeyIndex().getColumns();
+        boolean hasSinglePrimaryKeyColumn = primaryKeyColumns.size() == 1;
+
         String tableName = table.getName();
         stmtBuilder.append("CREATE TABLE ");
         stmtBuilder.append(createStringConstant(tableName));
@@ -65,6 +68,10 @@ public class SQLiteSQLGenerator implements SQLGenerator {
 
                 default:
                     throw new IllegalArgumentException("Unsupported data type: " + column.getType());
+            }
+
+            if (hasSinglePrimaryKeyColumn && primaryKeyColumns.get(0).getColumn().equals(column)) {
+                stmtBuilder.append(" PRIMARY KEY");
             }
 
             if (iterator.hasNext()) {
