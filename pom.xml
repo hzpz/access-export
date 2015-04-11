@@ -6,7 +6,7 @@
 
     <groupId>net.kockert</groupId>
     <artifactId>access-export</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 
     <properties>
         <java.version>1.8</java.version>
