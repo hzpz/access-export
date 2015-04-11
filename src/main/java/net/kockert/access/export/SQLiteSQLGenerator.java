@@ -67,8 +67,9 @@ public class SQLiteSQLGenerator implements SQLGenerator {
                     throw new IllegalArgumentException("Unsupported data type: " + column.getType());
             }
 
-            if (iterator.hasNext())
+            if (iterator.hasNext()) {
                 stmtBuilder.append(", ");
+            }
         }
 
         for (Relationship relationship : relationships) {
