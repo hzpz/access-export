@@ -5,11 +5,14 @@
 package net.kockert.access.export;
 
 import com.healthmarketscience.jackcess.Index;
+import com.healthmarketscience.jackcess.Relationship;
 import com.healthmarketscience.jackcess.Table;
+
+import java.util.List;
 
 public interface SQLGenerator {
 
-    String createTable(Table table);
+    String createTable(Table table, List<Relationship> relationships);
 
     String createIndex(Index index);
 

@@ -6,6 +6,7 @@ package net.kockert.access.export;
 
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Index;
+import com.healthmarketscience.jackcess.Relationship;
 import com.healthmarketscience.jackcess.Table;
 
 import java.util.Iterator;
@@ -14,7 +15,7 @@ import java.util.List;
 public class SQLiteSQLGenerator implements SQLGenerator {
 
     @Override
-    public String createTable(Table table) {
+    public String createTable(Table table, List<Relationship> relationships) {
         final StringBuilder stmtBuilder = new StringBuilder();
 
         String tableName = table.getName();
@@ -69,6 +70,33 @@ public class SQLiteSQLGenerator implements SQLGenerator {
             if (iterator.hasNext())
                 stmtBuilder.append(", ");
         }
+
+        for (Relationship relationship : relationships) {
+            if (!relationship.getToTable().equals(table)) {
+                continue;
+            }
+
+            stmtBuilder.append(", FOREIGN KEY(");
+            for (Iterator<Column> iterator = relationship.getToColumns().iterator(); iterator.hasNext(); ) {
+                Column foreignKeyColumn = iterator.next();
+                stmtBuilder.append(foreignKeyColumn.getName());
+                if (iterator.hasNext()) {
+                    stmtBuilder.append(", ");
+                }
+            }
+            stmtBuilder.append(") REFERENCES ");
+            stmtBuilder.append(relationship.getFromTable().getName());
+            stmtBuilder.append("(");
+            for (Iterator<Column> iterator = relationship.getFromColumns().iterator(); iterator.hasNext(); ) {
+                Column referencedColumn = iterator.next();
+                stmtBuilder.append(referencedColumn.getName());
+                if (iterator.hasNext()) {
+                    stmtBuilder.append(", ");
+                }
+            }
+            stmtBuilder.append(")");
+        }
+
         stmtBuilder.append(")");
 
         return stmtBuilder.toString();

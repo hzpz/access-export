@@ -75,8 +75,8 @@ public class Exporter {
         }
     }
 
-    private void createTable(final Table table, final Connection jdbcConnection) throws SQLException {
-        String sql = sqlGenerator.createTable(table);
+    private void createTable(final Table table, final Connection jdbcConnection) throws SQLException, IOException {
+        String sql = sqlGenerator.createTable(table, db.getRelationships(table));
         LOGGER.debug("Executing SQL: {}", sql);
         try (Statement statement = jdbcConnection.createStatement()) {
             statement.execute(sql);
