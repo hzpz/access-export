@@ -6,16 +6,18 @@ package net.kockert.access.export;
 
 import com.beust.jcommander.Parameter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class CommandLineParameters {
 
     @Parameter(description = "<source> <target>")
     private List<String> parameters = new ArrayList<>();
 
-    @Parameter(names = "--help", help = true, description = "display usage instructions")
+    @Parameter(names = {"-h", "--help"}, help = true, description = "display usage instructions")
     private boolean help;
+
+    @Parameter(names = {"-t", "--tables"}, description = "tables to export")
+    private List<String> tablesToExport = Collections.emptyList();
 
     public List<String> getParameters() {
         return parameters;
@@ -23,6 +25,10 @@ public class CommandLineParameters {
 
     public boolean helpRequested() {
         return help;
+    }
+
+    public Set<String> getTablesToExport() {
+        return new HashSet<>(tablesToExport);
     }
 
     public boolean insufficientParameters() {

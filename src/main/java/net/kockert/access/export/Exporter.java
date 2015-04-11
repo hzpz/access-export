@@ -29,8 +29,12 @@ public class Exporter {
     private final SQLGenerator sqlGenerator;
 
     public Exporter(final Database db) {
+        this(db, Collections.emptySet());
+    }
+
+    public Exporter(Database db, Set<String> tablesToExport) {
         this.db = db;
-        this.tablesToExport = Collections.emptySet();
+        this.tablesToExport = tablesToExport;
         this.sqlGenerator = new SQLiteSQLGenerator();
     }
 

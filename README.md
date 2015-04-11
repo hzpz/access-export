@@ -8,8 +8,10 @@ Currently only exports to SQLite.
     mvn clean package
 This creates an executable JAR access-export-x.x.x.jar in the target directory.
 ### Run
-    java -jar access-export-x.x.x.jar <source> <target>
+    java -jar [-t <tables>] access-export-x.x.x.jar <source> <target>
 The source must be an mdb or accdb file. The target file must not exist, it will be created.
+
+* -t \<tables\> : a comma-separated list of tables to export
 
 ## Dependencies
 * [SLF4J], licensed under [MIT License]
