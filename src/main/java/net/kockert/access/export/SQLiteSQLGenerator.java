@@ -9,6 +9,7 @@ import com.healthmarketscience.jackcess.Index;
 import com.healthmarketscience.jackcess.Relationship;
 import com.healthmarketscience.jackcess.Table;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class SQLiteSQLGenerator implements SQLGenerator {
     public String createTable(Table table, List<Relationship> relationships) {
         final StringBuilder stmtBuilder = new StringBuilder();
 
-        List<? extends Index.Column> primaryKeyColumns = table.getPrimaryKeyIndex().getColumns();
+        List<? extends Index.Column> primaryKeyColumns = getPrimaryKeyColumns(table);
         boolean hasSinglePrimaryKeyColumn = primaryKeyColumns.size() == 1;
 
         String tableName = table.getName();
@@ -110,6 +111,16 @@ public class SQLiteSQLGenerator implements SQLGenerator {
         return stmtBuilder.toString();
     }
 
+    private List<? extends Index.Column> getPrimaryKeyColumns(Table table) {
+        for (Index index : table.getIndexes()) {
+            if (index.isPrimaryKey()) {
+                return index.getColumns();
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
     /**
      * Creates a string constant for SQLite.
      *
@@ -140,7 +151,7 @@ public class SQLiteSQLGenerator implements SQLGenerator {
         stmtBuilder.append(createStringConstant(tableName));
         stmtBuilder.append(" (");
 
-        for (Iterator<? extends Index.Column> iterator = columns.iterator(); iterator.hasNext();) {
+        for (Iterator<? extends Index.Column> iterator = columns.iterator(); iterator.hasNext(); ) {
             Index.Column column = iterator.next();
             stmtBuilder.append(createStringConstant(column.getName()));
             if (iterator.hasNext())
@@ -161,7 +172,7 @@ public class SQLiteSQLGenerator implements SQLGenerator {
 
         final List<? extends Column> columns = table.getColumns();
 
-        for (Iterator<? extends Column> iterator = columns.iterator(); iterator.hasNext();) {
+        for (Iterator<? extends Column> iterator = columns.iterator(); iterator.hasNext(); ) {
             Column column = iterator.next();
             stmtBuilder.append(createStringConstant(column.getName()));
             if (iterator.hasNext()) {
@@ -171,7 +182,7 @@ public class SQLiteSQLGenerator implements SQLGenerator {
 
         stmtBuilder.append(") VALUES (");
 
-        for (Iterator<? extends Column> iterator = columns.iterator(); iterator.hasNext();) {
+        for (Iterator<? extends Column> iterator = columns.iterator(); iterator.hasNext(); ) {
             iterator.next();
             stmtBuilder.append("?");
             if (iterator.hasNext()) {
