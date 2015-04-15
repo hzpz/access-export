@@ -13,9 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Exporter {
@@ -60,11 +58,29 @@ public class Exporter {
     }
 
     private void createIndexes(final Table table, final Connection jdbcConnection) throws SQLException {
-        List<? extends Index> indexes = table.getIndexes();
+        Collection<Index> indexes = filterDuplicateIndexes(table);
 
         for (Index index : indexes) {
             createIndex(index, jdbcConnection);
         }
+    }
+
+    private Collection<Index> filterDuplicateIndexes(final Table table) {
+        Map<List<Column>, Index> columnsToIndexMap = new HashMap<>();
+
+        for (Index index : table.getIndexes()) {
+            List<Column> columns = index.getColumns()
+                    .stream()
+                    .map(Index.Column::getColumn)
+                    .collect(Collectors.toList());
+
+            // unique indexes should always take precedence
+            if (!columnsToIndexMap.containsKey(columns) || index.isUnique()) {
+                columnsToIndexMap.put(columns, index);
+            }
+        }
+
+        return columnsToIndexMap.values();
     }
 
     private void createIndex(final Index index, final Connection jdbcConnection) throws SQLException {
