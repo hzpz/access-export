@@ -66,4 +66,37 @@ public class ExporterIT {
         jdbcConnection.close();
     }
 
+    @Test
+    public void shouldFilterDuplicateIndex() throws IOException, SQLException {
+        String tableName = "TestTable";
+        String columnName = "TestColumn";
+        String indexName = "TestIndex";
+
+        File databaseFile = File.createTempFile("access2003-", ".mdb");
+        databaseFile.deleteOnExit();
+        File sqliteFile = File.createTempFile("export-", ".sqlite");
+        sqliteFile.deleteOnExit();
+
+        Database database = DatabaseBuilder.create(Database.FileFormat.V2003, databaseFile);
+        TableBuilder tableBuilder = new TableBuilder(tableName);
+        tableBuilder.addColumn(new ColumnBuilder(columnName).setType(DataType.INT));
+        tableBuilder.addIndex(new IndexBuilder(indexName).addColumns(columnName));
+        tableBuilder.addIndex(new IndexBuilder(indexName + "Duplicate").addColumns(columnName));
+        Table table = tableBuilder.toTable(database);
+        table.addRow(1);
+
+        final Exporter exporter = new Exporter(database);
+        final Connection jdbcConnection = DriverManager.getConnection("jdbc:sqlite:" + sqliteFile);
+        exporter.export(jdbcConnection);
+
+        // fyi: the SQLite driver has a bug which results in an exception on the next line if the table has more than
+        // one index, see https://bitbucket.org/xerial/sqlite-jdbc/issue/134/metadatagetindexinfo-throws-exception
+        ResultSet indexInfo = jdbcConnection.getMetaData().getIndexInfo(jdbcConnection.getCatalog(), null, tableName, false, true);
+        int indexCount = 0;
+        while (indexInfo.next()) {
+            indexCount++;
+        }
+
+        assertThat(indexCount, equalTo(1));
+    }
 }
