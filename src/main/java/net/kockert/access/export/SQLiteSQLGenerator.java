@@ -111,6 +111,13 @@ public class SQLiteSQLGenerator implements SQLGenerator {
         return stmtBuilder.toString();
     }
 
+    /**
+     * Searches for a primary key index on the given table and returns the columns that were used for the index key.
+     * If the table does not have a primary key index the returned list will be empty.
+     *
+     * @param table the table on which to search for a primary key index
+     * @return the list of columns used for the index key or an empty list, if no primary key index exists
+     */
     private List<? extends Index.Column> getPrimaryKeyColumns(Table table) {
         for (Index index : table.getIndexes()) {
             if (index.isPrimaryKey()) {
