@@ -21,6 +21,7 @@ public class SQLiteSQLGenerator implements SQLGenerator {
 
         List<? extends Index.Column> primaryKeyColumns = getPrimaryKeyColumns(table);
         boolean hasSinglePrimaryKeyColumn = primaryKeyColumns.size() == 1;
+        boolean hasMultiplePrimaryKeyColumns = primaryKeyColumns.size() > 1;
 
         String tableName = table.getName();
         stmtBuilder.append("CREATE TABLE ");
@@ -78,6 +79,17 @@ public class SQLiteSQLGenerator implements SQLGenerator {
             if (iterator.hasNext()) {
                 stmtBuilder.append(", ");
             }
+        }
+
+        if (hasMultiplePrimaryKeyColumns) {
+            stmtBuilder.append(", PRIMARY KEY(");
+            for (Iterator<? extends Index.Column> iterator = primaryKeyColumns.iterator(); iterator.hasNext(); ) {
+                stmtBuilder.append(iterator.next().getName());
+                if (iterator.hasNext()) {
+                    stmtBuilder.append(", ");
+                }
+            }
+            stmtBuilder.append(")");
         }
 
         for (Relationship relationship : relationships) {
