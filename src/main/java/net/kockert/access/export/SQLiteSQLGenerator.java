@@ -173,7 +173,7 @@ public class SQLiteSQLGenerator implements SQLGenerator {
             }
         }
         stmtBuilder.append(") REFERENCES ");
-        stmtBuilder.append(relationship.getFromTable().getName());
+        stmtBuilder.append(createStringConstant(relationship.getFromTable().getName()));
         stmtBuilder.append("(");
         for (Iterator<Column> iterator = relationship.getFromColumns().iterator(); iterator.hasNext(); ) {
             Column referencedColumn = iterator.next();
