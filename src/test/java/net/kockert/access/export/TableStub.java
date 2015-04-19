@@ -12,17 +12,43 @@ import java.util.*;
 public class TableStub implements Table {
 
     private String name;
-    private List<? extends Index> indexes;
+    private List<IndexStub> indexes;
     private List<ColumnStub> columns;
 
     public TableStub(String name) {
         this.name = name;
-        indexes = Collections.emptyList();
+        indexes = new ArrayList<>();
         columns = new ArrayList<>();
     }
 
+    public void addPrimaryKeyIndex(Column... columns) {
+        addIndex(true, columns);
+    }
+
+    public void addIndex(Column... columns) {
+        addIndex(false, columns);
+    }
+
+    private void addIndex(boolean primaryKey, Column... columns) {
+        IndexStub index = new IndexStub(primaryKey);
+        for (Column column : columns) {
+            index.addColumn(column);
+        }
+        indexes.add(index);
+    }
+
     public void addColumn(String name, DataType type) {
-        columns.add(new ColumnStub(name, type));
+        addColumn(new ColumnStub(name, type));
+    }
+
+    public void addColumn(ColumnStub column) {
+        columns.add(column);
+    }
+
+    public void addColumns(ColumnStub... columns) {
+        for (ColumnStub column : columns) {
+            addColumn(column);
+        }
     }
 
     @Override
