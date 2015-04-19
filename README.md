@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/hzpz/access-export.svg?branch=master)](https://travis-ci.org/hzpz/access-export)
+[![Coverage Status](https://coveralls.io/repos/hzpz/access-export/badge.svg?branch=master)](https://coveralls.io/r/hzpz/access-export?branch=master)
 
 # access-export
 A Java-based and therefore platform-independent tool to export and convert Microsoft® Access® databases to various formats. 
