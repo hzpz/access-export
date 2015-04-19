@@ -24,15 +24,31 @@ public class Main {
     private static final int EXIT_STATUS_TARGET_DOES_ALREADY_EXIST = 3;
     private static final int EXIT_STATUS_ERROR_OPENING_SOURCE = 4;
     private static final int EXIT_STATUS_ERROR_OPENING_TARGET = 5;
+    private static final int EXIT_STATUS_ERROR_DURING_EXPORT = 6;
 
     public static void main(String[] args) {
+        Main main = new Main(systemExitException -> {
+            System.err.println(systemExitException.getMessage());
+            System.exit(systemExitException.getStatusCode());
+        });
+        main.run(args);
+    }
+
+    private SystemExitHandler systemExitHandler;
+
+    public Main(SystemExitHandler systemExitHandler) {
+        this.systemExitHandler = systemExitHandler;
+    }
+
+    public void run(String... args) {
         CommandLineParameters clp = new CommandLineParameters();
         JCommander jCommander = new JCommander(clp);
         jCommander.parse(args);
 
         if (clp.helpRequested() || clp.insufficientParameters()) {
-            jCommander.usage();
-            System.exit(EXIT_STATUS_INVALID_USAGE);
+            StringBuilder usage = new StringBuilder();
+            jCommander.usage(usage);
+            systemExitHandler.handle(new SystemExitException(usage.toString(), EXIT_STATUS_INVALID_USAGE));
         }
 
         try {
@@ -44,14 +60,13 @@ public class Main {
                 exporter.export(jdbcConnection);
             }
         } catch (SystemExitException e) {
-            System.err.println(e.getMessage());
-            System.exit(e.getStatusCode());
+            systemExitHandler.handle(e);
         } catch (IOException | SQLException e) {
-            System.err.println("Error during export: " + e.getMessage());
+            systemExitHandler.handle(new SystemExitException("Error during export", e, EXIT_STATUS_ERROR_DURING_EXPORT));
         }
     }
 
-    private static Path getSourceFile(CommandLineParameters clp) throws SystemExitException {
+    private Path getSourceFile(CommandLineParameters clp) throws SystemExitException {
         Path sourceFile = Paths.get(clp.getParameters().get(0));
         if (Files.notExists(sourceFile)) {
             throw new SystemExitException("'" + sourceFile + "' does not exist", EXIT_STATUS_SOURCE_DOES_NOT_EXIST);
@@ -59,7 +74,7 @@ public class Main {
         return sourceFile;
     }
 
-    private static Path getTargetFile(CommandLineParameters clp) throws SystemExitException {
+    private Path getTargetFile(CommandLineParameters clp) throws SystemExitException {
         Path targetFile = Paths.get(clp.getParameters().get(1));
         if (Files.exists(targetFile)) {
             throw new SystemExitException("'" + targetFile + "' does already exist", EXIT_STATUS_TARGET_DOES_ALREADY_EXIST);
@@ -67,7 +82,7 @@ public class Main {
         return targetFile;
     }
 
-    private static Database openSourceDatabase(File databaseFile) throws SystemExitException {
+    private Database openSourceDatabase(File databaseFile) throws SystemExitException {
         Database database;
         try {
             database = new DatabaseBuilder(databaseFile).setReadOnly(true).open();
@@ -77,7 +92,7 @@ public class Main {
         return database;
     }
 
-    private static Connection openTargetDatabase(Path databaseFile) throws SystemExitException {
+    private Connection openTargetDatabase(Path databaseFile) throws SystemExitException {
         Connection jdbcConnection;
         try {
             jdbcConnection = DriverManager.getConnection("jdbc:sqlite:" + databaseFile);
@@ -88,9 +103,18 @@ public class Main {
     }
 
     /**
+     * Handles {@link SystemExitException}s
+     */
+    interface SystemExitHandler {
+
+        void handle(SystemExitException systemExitException);
+
+    }
+
+    /**
      * Indicates an exception that must result in a call to {@link System#exit(int)}.
      */
-    private static class SystemExitException extends Exception {
+    static class SystemExitException extends Exception {
 
         private final int statusCode;
 
