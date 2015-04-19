@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/hzpz/access-export.svg?branch=master)](https://travis-ci.org/hzpz/access-export)
+
 # access-export
 A Java-based and therefore platform-independent tool to export and convert Microsoft® Access® databases to various formats. 
 It uses [Jackcess] to read mdb and accdb files from Access® versions 97-2010. 
