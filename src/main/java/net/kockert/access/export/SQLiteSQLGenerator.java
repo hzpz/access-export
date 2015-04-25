@@ -232,7 +232,7 @@ public class SQLiteSQLGenerator implements SQLGenerator {
         stmtBuilder.append(createStringConstant(indexName));
         stmtBuilder.append(" ON ");
         stmtBuilder.append(createStringConstant(tableName));
-        stmtBuilder.append(" (");
+        stmtBuilder.append("(");
 
         for (Iterator<? extends Index.Column> iterator = columns.iterator(); iterator.hasNext(); ) {
             Index.Column column = iterator.next();

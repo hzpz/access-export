@@ -17,6 +17,12 @@ public class MainIT {
     }
 
     @Test(expected = SystemExitRuntimeException.class)
+    public void shouldExitIfHelpWasRequest() {
+        Main main = new Main(new TestSystemExitHandler());
+        main.run("-h");
+    }
+
+    @Test(expected = SystemExitRuntimeException.class)
     public void shouldExitIfSourceFileDoesNotExist() {
         Main main = new Main(new TestSystemExitHandler());
         main.run("aSourceFileThatDoesNotExist", "targetFile");

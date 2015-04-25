@@ -13,26 +13,28 @@ import java.util.List;
  */
 public class IndexStub implements Index {
 
-    private boolean primaryKey;
-    private List<ColumnStub> columns;
+    private final Table table;
+    private final String name;
+    private final boolean primaryKey;
+    private final boolean unique;
+    private final List<Column> columns;
 
-    public IndexStub(boolean primaryKey) {
-        this.primaryKey = primaryKey;
-        this.columns = new ArrayList<>();
-    }
-
-    public void addColumn(com.healthmarketscience.jackcess.Column column) {
-        columns.add(new ColumnStub(column));
+    private IndexStub(IndexStubBuilder builder) {
+        this.table = builder.table;
+        this.name = builder.name;
+        this.primaryKey = builder.primaryKey;
+        this.unique = builder.unique;
+        this.columns = builder.columns;
     }
 
     @Override
     public Table getTable() {
-        return null;
+        return table;
     }
 
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     @Override
@@ -62,7 +64,7 @@ public class IndexStub implements Index {
 
     @Override
     public boolean isUnique() {
-        return false;
+        return unique;
     }
 
     @Override
@@ -99,5 +101,47 @@ public class IndexStub implements Index {
         }
 
     }
+
+    public static class IndexStubBuilder {
+        private Table table;
+        private String name;
+        private boolean primaryKey;
+        private boolean unique;
+        private List<Column> columns;
+
+        public IndexStubBuilder() {
+            this.columns = new ArrayList<>();
+        }
+
+        public IndexStubBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public IndexStubBuilder primaryKey() {
+            this.primaryKey = true;
+            return this;
+        }
+
+        public IndexStubBuilder unique() {
+            this.unique = true;
+            return this;
+        }
+
+        public IndexStubBuilder onTable(Table table) {
+            this.table = table;
+            return this;
+        }
+
+        public IndexStubBuilder onColumn(com.healthmarketscience.jackcess.Column column) {
+            columns.add(new ColumnStub(column));
+            return this;
+        }
+
+        public IndexStub build() {
+            return new IndexStub(this);
+        }
+    }
+
 
 }

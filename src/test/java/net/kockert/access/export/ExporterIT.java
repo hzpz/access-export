@@ -25,6 +25,7 @@ public class ExporterIT {
         Date now = new Date();
         BigDecimal bigDecimal = new BigDecimal("3.21");
         boolean bool = true;
+        String text = "Text";
 
         String tableName = "TestTable";
         String columnNameBinary = "binary";
@@ -32,6 +33,7 @@ public class ExporterIT {
         String columnNameDateTime = "datetime";
         String columnNameMoney = "money";
         String columnNameBoolean = "boolean";
+        String columnNameText = "text";
 
         File databaseFile = File.createTempFile("access2003-", ".mdb");
         databaseFile.deleteOnExit();
@@ -45,8 +47,9 @@ public class ExporterIT {
         tableBuilder.addColumn(new ColumnBuilder(columnNameDateTime).setType(DataType.SHORT_DATE_TIME));
         tableBuilder.addColumn(new ColumnBuilder(columnNameMoney).setType(DataType.MONEY));
         tableBuilder.addColumn(new ColumnBuilder(columnNameBoolean).setType(DataType.BOOLEAN));
+        tableBuilder.addColumn(new ColumnBuilder(columnNameText).setType(DataType.TEXT));
         Table table = tableBuilder.toTable(database);
-        table.addRow(bytes, floaty, now, bigDecimal, bool);
+        table.addRow(bytes, floaty, now, bigDecimal, bool, text);
 
         final Exporter exporter = new Exporter(database);
         final Connection jdbcConnection = DriverManager.getConnection("jdbc:sqlite:" + sqliteFile);
@@ -60,6 +63,7 @@ public class ExporterIT {
             assertThat(resultSet.getLong(columnNameDateTime), equalTo(now.getTime()));
             assertThat(resultSet.getBigDecimal(columnNameMoney), equalTo(bigDecimal));
             assertThat(resultSet.getBoolean(columnNameBoolean), equalTo(bool));
+            assertThat(resultSet.getString(columnNameText), equalTo(text));
         }
 
         database.close();

@@ -22,19 +22,11 @@ public class TableStub implements Table {
     }
 
     public void addPrimaryKeyIndex(Column... columns) {
-        addIndex(true, columns);
-    }
-
-    public void addIndex(Column... columns) {
-        addIndex(false, columns);
-    }
-
-    private void addIndex(boolean primaryKey, Column... columns) {
-        IndexStub index = new IndexStub(primaryKey);
+        IndexStub.IndexStubBuilder indexStubBuilder = new IndexStub.IndexStubBuilder().primaryKey();
         for (Column column : columns) {
-            index.addColumn(column);
+            indexStubBuilder.onColumn(column);
         }
-        indexes.add(index);
+        indexes.add(indexStubBuilder.build());
     }
 
     public void addColumn(String name, DataType type) {

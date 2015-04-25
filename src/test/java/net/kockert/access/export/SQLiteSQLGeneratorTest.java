@@ -93,7 +93,28 @@ public class SQLiteSQLGeneratorTest {
                 String.format("CREATE TABLE '%1$s' ('%2$s' INTEGER, FOREIGN KEY('%2$s') REFERENCES '%3$s'('%4$s'))",
                         tableName, columnName, fromTableName, fromColumnName);
         assertThat(sql, equalTo(expectedSql));
+    }
 
+    @Test
+    public void shouldRecreateUniqueIndex() {
+        String tableName = "TestTable";
+        String indexName = "TestIndex";
+        String columnName = "TestColumn";
+
+        IndexStub index = new IndexStub.IndexStubBuilder()
+                .name(indexName)
+                .onTable(new TableStub(tableName))
+                .onColumn(new ColumnStub(columnName, DataType.INT))
+                .unique()
+                .build();
+
+        SQLiteSQLGenerator sqlGenerator = new SQLiteSQLGenerator();
+        String sql = sqlGenerator.createIndex(index);
+
+        String expectedSql =
+                String.format("CREATE UNIQUE INDEX '%1$s_%2$s' ON '%1$s'('%3$s')",
+                tableName, indexName, columnName);
+        assertThat(sql, equalTo(expectedSql));
     }
 
 }
