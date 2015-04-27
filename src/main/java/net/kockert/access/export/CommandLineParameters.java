@@ -16,8 +16,11 @@ public class CommandLineParameters {
     @Parameter(names = {"-h", "--help"}, help = true, description = "display usage instructions")
     private boolean help;
 
-    @Parameter(names = {"-t", "--tables"}, description = "tables to export")
+    @Parameter(names = {"-t", "--tables"}, description = "tables to export, comma-separated")
     private List<String> tablesToExport = Collections.emptyList();
+
+    @Parameter(names = {"-f", "--format"}, description = "export format: 'sqlite' or 'csv'")
+    private String format = "sqlite";
 
     public List<String> getParameters() {
         return parameters;
@@ -29,6 +32,18 @@ public class CommandLineParameters {
 
     public Set<String> getTablesToExport() {
         return new HashSet<>(tablesToExport);
+    }
+
+    public boolean hasTablesToExport() {
+        return !tablesToExport.isEmpty();
+    }
+
+    public ExportFormat getFormat() {
+        try {
+            return ExportFormat.valueOf(format.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return ExportFormat.SQLITE;
+        }
     }
 
     public boolean insufficientParameters() {
