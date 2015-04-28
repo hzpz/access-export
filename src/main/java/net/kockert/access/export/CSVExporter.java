@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Set;
 
+/**
+ * Exports an Access database using Jackcess' built-in {@link ExportUtil} with default settings plus header.
+ */
 public class CSVExporter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CSVExporter.class);

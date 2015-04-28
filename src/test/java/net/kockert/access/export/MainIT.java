@@ -49,6 +49,24 @@ public class MainIT {
         main.run("src/test/resources/source.mdb", tempDirectory + "/aTargetFileThatDoesNotExist");
     }
 
+    @Test(expected = SystemExitRuntimeException.class)
+    public void shouldExitIfInvalidExportFormatSpecified() {
+        Main main = new Main(new TestSystemExitHandler());
+        main.run("-f", "broken", "someSource", "someTarget");
+    }
+
+    @Test(expected = SystemExitRuntimeException.class)
+    public void shouldExitIfTargetDirForCSVsDoesNotExist() {
+        Main main = new Main(new TestSystemExitHandler());
+        main.run("-f", "csv", "src/test/resources/source.mdb", "doesNotExist");
+    }
+
+    @Test(expected = SystemExitRuntimeException.class)
+    public void shouldExitIfTargetDirForCSVsIsNotADirectory() {
+        Main main = new Main(new TestSystemExitHandler());
+        main.run("-f", "csv", "src/test/resources/source.mdb", "src/test/resources/noDirectory.txt");
+    }
+
     class TestSystemExitHandler implements Main.SystemExitHandler {
 
         @Override
