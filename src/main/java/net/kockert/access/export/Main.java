@@ -27,6 +27,7 @@ public class Main {
     private static final int EXIT_STATUS_ERROR_DURING_EXPORT = 6;
     private static final int EXIT_STATUS_TARGET_DIR_DOES_NOT_EXIST = 7;
     private static final int EXIT_STATUS_TARGET_DIR_IS_NO_DIRECTORY = 8;
+    private static final int EXIT_STATUS_INVALID_EXPORT_FORMAT = 9;
 
     public static void main(String[] args) {
         Main main = new Main(systemExitException -> {
@@ -62,6 +63,8 @@ public class Main {
                     csvExport(clp);
                     break;
             }
+        } catch (IllegalArgumentException e) {
+            systemExitHandler.handle(new SystemExitException("Invalid parameter value", e, EXIT_STATUS_INVALID_EXPORT_FORMAT));
         } catch (SystemExitException e) {
             systemExitHandler.handle(e);
         } catch (IOException | SQLException e) {

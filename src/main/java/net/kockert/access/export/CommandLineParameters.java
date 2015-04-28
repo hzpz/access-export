@@ -42,7 +42,7 @@ public class CommandLineParameters {
         try {
             return ExportFormat.valueOf(format.toUpperCase());
         } catch (IllegalArgumentException e) {
-            return ExportFormat.SQLITE;
+            throw new IllegalArgumentException("'" + format + "' is not a valid export format", e);
         }
     }
 
