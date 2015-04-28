@@ -12,7 +12,7 @@ public enum ExportFormat {
     SQLITE,
 
     /**
-     * Comma-separates values
+     * Comma-separated values
      */
     CSV
 
