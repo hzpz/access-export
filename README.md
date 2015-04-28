@@ -21,7 +21,7 @@ The source must be an mdb or accdb file. The target file must not exist, it will
 * [Xerial SQLite JDBC], licensed under [The Apache Software License, Version 2.0]
 * [JCommander], licensed under [The Apache Software License, Version 2.0]
 * [Commons Lang], licensed under [The Apache Software License, Version 2.0]
-* [Jackcess], licensed under [GNU Lesser General Public License, Version 2.1]
+* [Jackcess], licensed under [The Apache Software License, Version 2.0]
 * [Logback], licensed under [GNU Lesser General Public License, Version 2.1]
 
 [Jackcess]: http://jackcess.sourceforge.net/
