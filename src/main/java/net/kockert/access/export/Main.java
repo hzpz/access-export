@@ -25,6 +25,9 @@ public class Main {
     private static final int EXIT_STATUS_ERROR_OPENING_SOURCE = 4;
     private static final int EXIT_STATUS_ERROR_OPENING_TARGET = 5;
     private static final int EXIT_STATUS_ERROR_DURING_EXPORT = 6;
+    private static final int EXIT_STATUS_TARGET_DIR_DOES_NOT_EXIST = 7;
+    private static final int EXIT_STATUS_TARGET_DIR_IS_NO_DIRECTORY = 8;
+    private static final int EXIT_STATUS_INVALID_EXPORT_FORMAT = 9;
 
     public static void main(String[] args) {
         Main main = new Main(systemExitException -> {
@@ -52,17 +55,43 @@ public class Main {
         }
 
         try {
-            Path sourceFile = getSourceFile(clp);
-            Path targetFile = getTargetFile(clp);
-            try (Database database = openSourceDatabase(sourceFile.toFile());
-                 Connection jdbcConnection = openTargetDatabase(targetFile)) {
-                Exporter exporter = new Exporter(database, clp.getTablesToExport());
-                exporter.export(jdbcConnection);
+            switch (clp.getFormat()) {
+                case SQLITE:
+                    jdbcExport(clp);
+                    break;
+                case CSV:
+                    csvExport(clp);
+                    break;
             }
+        } catch (IllegalArgumentException e) {
+            systemExitHandler.handle(new SystemExitException("Invalid parameter value", e, EXIT_STATUS_INVALID_EXPORT_FORMAT));
         } catch (SystemExitException e) {
             systemExitHandler.handle(e);
         } catch (IOException | SQLException e) {
             systemExitHandler.handle(new SystemExitException("Error during export", e, EXIT_STATUS_ERROR_DURING_EXPORT));
+        }
+    }
+
+    private void csvExport(CommandLineParameters clp) throws SystemExitException, IOException {
+        Path sourceFile = getSourceFile(clp);
+        Path targetDir = getTargetDir(clp);
+        try (Database database = openSourceDatabase(sourceFile.toFile())) {
+            CSVExporter exporter = new CSVExporter(database);
+            if (clp.hasTablesToExport()) {
+                exporter.export(targetDir, clp.getTablesToExport());
+            } else {
+                exporter.export(targetDir);
+            }
+        }
+    }
+
+    private void jdbcExport(CommandLineParameters clp) throws SystemExitException, IOException, SQLException {
+        Path sourceFile = getSourceFile(clp);
+        Path targetFile = getTargetFile(clp);
+        try (Database database = openSourceDatabase(sourceFile.toFile());
+             Connection jdbcConnection = openTargetDatabase(targetFile)) {
+            Exporter exporter = new Exporter(database, clp.getTablesToExport());
+            exporter.export(jdbcConnection);
         }
     }
 
@@ -80,6 +109,17 @@ public class Main {
             throw new SystemExitException("'" + targetFile + "' does already exist", EXIT_STATUS_TARGET_DOES_ALREADY_EXIST);
         }
         return targetFile;
+    }
+
+    private Path getTargetDir(CommandLineParameters clp) throws SystemExitException {
+        Path targetDir = Paths.get(clp.getParameters().get(1));
+        if (Files.notExists(targetDir)) {
+            throw new SystemExitException("'" + targetDir + "' does not exist", EXIT_STATUS_TARGET_DIR_DOES_NOT_EXIST);
+        }
+        if (!Files.isDirectory(targetDir)) {
+            throw new SystemExitException("'" + targetDir + "' is not a directory", EXIT_STATUS_TARGET_DIR_IS_NO_DIRECTORY);
+        }
+        return targetDir;
     }
 
     private Database openSourceDatabase(File databaseFile) throws SystemExitException {

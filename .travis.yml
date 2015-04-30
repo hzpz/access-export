@@ -2,4 +2,4 @@ language: java
 jdk:
   - oraclejdk8
 after_success:
-  - mvn clean verify -Pcoverage
+  - mvn cobertura:cobertura-integration-test coveralls:report
