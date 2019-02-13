@@ -2,16 +2,46 @@
 [![Coverage Status](https://coveralls.io/repos/hzpz/access-export/badge.svg?branch=master)](https://coveralls.io/r/hzpz/access-export?branch=master)
 
 # access-export
-A Java-based and therefore platform-independent tool to export and convert Microsoft® Access® databases to various formats. 
-It uses [Jackcess] to read mdb and accdb files from Access® versions 97-2010. 
+A Java-based and therefore platform-independent tool to export and convert Microsoft® Access® databases to various formats.
+It uses [Jackcess] to read mdb and accdb files from Access® versions 97-2010.
 Currently only exports to SQLite.
 
-## Usage
+## Docker Usage
+
 ### Build
-    mvn clean package
-This creates an executable JAR access-export-x.x.x.jar in the target directory.
+
+```shell
+docker build -t access-export .
+```
+
+This runs a multi-stage docker build, with the resulting image named `access-export`.
+
 ### Run
-    java -jar access-export-x.x.x.jar [-t <tables>] <source> <target>
+
+```shell
+docker run -v "$(pwd)/example":/data access-export [-t <tables>] <source> <target>
+```
+
+The source must be an mdb or accdb file. The target file must not exist, it will be created.
+
+* -t \<tables\> : a comma-separated list of tables to export
+
+## Usage
+
+### Build
+
+```shell
+mvn clean package
+```
+
+This creates an executable JAR access-export-x.x.x.jar in the target directory.
+
+### Run
+
+```shell
+java -jar access-export-x.x.x.jar [-t <tables>] <source> <target>
+```
+
 The source must be an mdb or accdb file. The target file must not exist, it will be created.
 
 * -t \<tables\> : a comma-separated list of tables to export
