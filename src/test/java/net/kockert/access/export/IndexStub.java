@@ -48,6 +48,11 @@ public class IndexStub implements Index {
     }
 
     @Override
+    public int getColumnCount() {
+        return columns.size();
+    }
+
+    @Override
     public List<? extends Column> getColumns() {
         return columns;
     }
@@ -65,6 +70,11 @@ public class IndexStub implements Index {
     @Override
     public boolean isUnique() {
         return unique;
+    }
+
+    @Override
+    public boolean isRequired() {
+        return false;
     }
 
     @Override

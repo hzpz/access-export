@@ -78,6 +78,11 @@ public class RelationshipStub implements Relationship {
     }
 
     @Override
+    public boolean cascadeNullOnDelete() {
+        return false;
+    }
+
+    @Override
     public boolean isLeftOuterJoin() {
         return false;
     }
@@ -85,6 +90,11 @@ public class RelationshipStub implements Relationship {
     @Override
     public boolean isRightOuterJoin() {
         return false;
+    }
+
+    @Override
+    public JoinType getJoinType() {
+        return JoinType.LEFT_OUTER;
     }
 
 }
