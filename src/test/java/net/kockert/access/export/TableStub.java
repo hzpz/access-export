@@ -15,6 +15,8 @@ public class TableStub implements Table {
     private List<IndexStub> indexes;
     private List<ColumnStub> columns;
 
+    private boolean allowAutoNumberInsert;
+
     public TableStub(String name) {
         this.name = name;
         indexes = new ArrayList<>();
@@ -76,6 +78,16 @@ public class TableStub implements Table {
     @Override
     public void setErrorHandler(ErrorHandler newErrorHandler) {
 
+    }
+
+    @Override
+    public boolean isAllowAutoNumberInsert() {
+        return allowAutoNumberInsert;
+    }
+
+    @Override
+    public void setAllowAutoNumberInsert(Boolean allowAutoNumInsert) {
+        this.allowAutoNumberInsert = allowAutoNumInsert;
     }
 
     @Override
